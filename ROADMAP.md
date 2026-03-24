@@ -9,6 +9,7 @@ This document outlines the current development focus and future direction of the
 Phase 1 focused on hardening the RAG backend for reliability, observability, and performance. All core work is shipped.
 
 **What shipped:**
+
 - Ingestion pipeline robustness and error handling
 - Async/batch processing foundations
 - Embedding queue for production scaling
@@ -25,13 +26,24 @@ Phase 1 focused on hardening the RAG backend for reliability, observability, and
 
 ## 🚀 Phase 2: Enhance Developer Experience (Current)
 
-Focus: Make ChatVector-AI easier to adopt, extend, and integrate.
+### 🔧 Backend
 
-- **Redis caching** — replaces in-memory queue with a durable, persistent queue and adds embedding/response caching for performance
-- **Observability** — LLM and embedding health monitoring on /status; structured log shipping to DataDog, Splunk, or ELK
-- **Extended RAG features** — advanced chunking strategies, query transformations, prompt tuning
-- **Developer tools** — client SDKs, deployment improvements
-- **Frontend expansion** — demo gallery, use case examples, interactive playground
+| Issue                                                                                                         | Description                                                                                          | Skill Level  |
+| ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------ |
+| [#123 Redis-Backed Durable Ingestion Queue](https://github.com/chatvector-ai/chatvector-ai/issues/123)        | Replace in-memory queue with Redis for job durability, multi-worker support, and DLQ visibility      | Advanced     |
+| [#124 Observability & Structured Log Shipping](https://github.com/chatvector-ai/chatvector-ai/issues/124)     | Wire log shipping to DataDog/Splunk/ELK; add LLM and embedding health checks to /status              | Intermediate |
+| [#125 Advanced Chunking Strategies](https://github.com/chatvector-ai/chatvector-ai/issues/125)                | Introduce configurable chunking strategies (fixed, paragraph, semantic) to improve retrieval quality | Intermediate |
+| [#126 Query Transformations](https://github.com/chatvector-ai/chatvector-ai/issues/126)                       | Add a query transformation layer (rewrite, expand, stepback) between user input and vector search    | Intermediate |
+| [#127 Prompt Tuning & System Prompt Configuration](https://github.com/chatvector-ai/chatvector-ai/issues/127) | Externalize system prompt and LLM parameters for adopter customization                               | Intermediate |
+| [#128 Python Client SDK](https://github.com/chatvector-ai/chatvector-ai/issues/128)                           | Lightweight Python SDK wrapping core API endpoints with consistent error handling                    | Advanced     |
+| [#129 Deployment Improvements](https://github.com/chatvector-ai/chatvector-ai/issues/129)                     | Production Compose config, GitHub Actions CI pipeline, and deployment documentation                  | Intermediate |
+
+### 🎨 Frontend
+
+| Issue                                                                                               | Description                                                                      | Skill Level  |
+| --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------ |
+| [#5 Add Document Upload to Chat Page](https://github.com/chatvector-ai/chatvector-ai/issues/5)      | Upload component with file selection, progress tracking, and backend integration | Intermediate |
+| [#8 Connect Chat Interface to Backend API](https://github.com/chatvector-ai/chatvector-ai/issues/8) | Wire chat input to POST /chat using doc_id from upload — blocked by #5           | Intermediate |
 
 ---
 
