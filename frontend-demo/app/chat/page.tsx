@@ -4,13 +4,21 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, FileText, X } from "lucide-react";
 import UploadButton from "../components/UploadButton";
 import UploadModal from "../components/UploadModal";
-import { deleteDocument, DocumentNotFoundError, getDocumentStatus } from "../lib/api";
+import {
+  deleteDocument,
+  DocumentNotFoundError,
+  getDocumentStatus,
+  sendMessage,
+  ChatError,
+} from "../lib/api";
+import type { ChatSource } from "../lib/api";
 
 type Message = {
   id: number;
   sender: "ai" | "user";
   text: string;
   document_id?: string;
+  sources?: ChatSource[];
 };
 
 type AttachmentState = {
@@ -28,16 +36,17 @@ const sampleMessages: Message[] = [
 ];
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>(sampleMessages);
+  const [messages, setMessages] = useState<Message[]>(welcomeMessages);
   const [input, setInput] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [attachment, setAttachment] = useState<AttachmentState | null>(null);
   const [removeError, setRemoveError] = useState<string | null>(null);
+  const [inflight, setInflight] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, inflight]);
 
   useEffect(() => {
     if (!attachment || attachment.status !== "processing") return;
@@ -128,6 +137,16 @@ export default function ChatPage() {
             </div>
           </div>
         ))}
+        {inflight && (
+          <div className="flex items-end gap-2">
+            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center bg-indigo-600">
+              <Bot size={16} />
+            </div>
+            <div className="px-4 py-3 rounded-2xl rounded-bl-none bg-gray-800 text-gray-400 text-sm animate-pulse">
+              Thinking...
+            </div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
       {attachment && (
