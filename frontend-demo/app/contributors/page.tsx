@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import ErrorState from "../components/ErrorState";
 
 type Contributor = {
   login: string;
@@ -14,8 +15,12 @@ export default function ContributorsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetch("https://api.github.com/repos/chatvector-ai/chatvector-ai/contributors")
+  const fetchContributors = useCallback(() => {
+    setLoading(true);
+    setError("");
+    fetch(
+      "https://api.github.com/repos/chatvector-ai/chatvector-ai/contributors"
+    )
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");
         return res.json();
@@ -23,8 +28,7 @@ export default function ContributorsPage() {
       .then((data) => {
         // sort explicitly (even though API already does)
         const sorted = data.sort(
-          (a: Contributor, b: Contributor) =>
-            b.contributions - a.contributions
+          (a: Contributor, b: Contributor) => b.contributions - a.contributions
         );
         setContributors(sorted);
         setLoading(false);
@@ -35,34 +39,38 @@ export default function ContributorsPage() {
       });
   }, []);
 
+  useEffect(() => {
+    fetchContributors();
+  }, [fetchContributors]);
+
   return (
     <div className="max-w-[720px] mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-foreground">
-        Contributors
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-foreground">Contributors</h1>
 
       {loading && (
-        <p className="text-muted text-center mt-6">
-  Loading contributors...
-</p>
+        <p className="text-muted text-center mt-6">Loading contributors...</p>
       )}
 
       {error && (
-       <p className="text-foreground text-center mt-6">
-  {error}
-</p>
+        <div className="mt-10">
+          <ErrorState
+            heading="Failed to load contributors"
+            message="Something went wrong fetching from GitHub."
+            onRetry={fetchContributors}
+          />
+        </div>
       )}
 
       {!loading && !error && (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {contributors.map((c) => (
-  <a
-    key={c.login}
-    href={c.html_url}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-surface border border-border p-4 rounded-lg flex flex-col items-center hover:border-accent hover:scale-[1.02] transition"
-  >
+            <a
+              key={c.login}
+              href={c.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-surface border border-border p-4 rounded-lg flex flex-col items-center hover:border-accent hover:scale-[1.02] transition"
+            >
               <img
                 src={c.avatar_url}
                 alt={c.login}
